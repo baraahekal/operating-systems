@@ -47,7 +47,7 @@ const App = () => {
     return (
         <Container sx={{ marginTop: '20px' }}>
             <Typography variant="h3" component="h1" align="center" gutterBottom>
-                Disk Scheduler Visualization
+                Disk Scheduler Simulator
             </Typography>
             <Grid container spacing={3}>
                 <Grid item xs={12} md={4}>

@@ -14,6 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.post("/fcfs")
 async def fcfs(request: Request):
     data = await request.json()
@@ -22,6 +23,7 @@ async def fcfs(request: Request):
     result = ds.fcfs(requests, starting_head)
     return result
 
+
 @app.post("/sstf")
 async def sstf(request: Request):
     data = await request.json()
@@ -29,6 +31,7 @@ async def sstf(request: Request):
     starting_head = data['starting_head']
     result = ds.sstf(requests, starting_head)
     return result
+
 
 @app.post("/scan")
 async def scan(request: Request):
@@ -39,6 +42,7 @@ async def scan(request: Request):
     result = ds.scan(requests, starting_head, cylinders)
     return result
 
+
 @app.post("/look")
 async def look(request: Request):
     data = await request.json()
@@ -46,6 +50,7 @@ async def look(request: Request):
     starting_head = data['starting_head']
     result = ds.look(requests, starting_head)
     return result
+
 
 @app.post("/c_scan")
 async def c_scan(request: Request):
@@ -55,6 +60,7 @@ async def c_scan(request: Request):
     cylinders = data['cylinders']
     result = ds.c_scan(requests, starting_head, cylinders)
     return result
+
 
 @app.post("/c_look")
 async def c_look(request: Request):

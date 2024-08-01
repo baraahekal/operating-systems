@@ -6,7 +6,6 @@ import {
 const SchedulerConfiguration = ({ onSubmit }) => {
     const [algorithm, setAlgorithm] = useState('fcfs');
     const [direction, setDirection] = useState('right');
-    const [animate, setAnimate] = useState(false);
     const [cylinders, setCylinders] = useState(200);
     const [requests, setRequests] = useState('');
     const [startingHead, setStartingHead] = useState('');
@@ -16,7 +15,6 @@ const SchedulerConfiguration = ({ onSubmit }) => {
         onSubmit({
             algorithm,
             direction,
-            animate,
             cylinders,
             starting_head: Number(startingHead),
             requests: requests.split(',').map(Number)
@@ -53,12 +51,7 @@ const SchedulerConfiguration = ({ onSubmit }) => {
                                 </RadioGroup>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12}>
-                            <FormControl component="fieldset">
-                                <FormLabel>Animate</FormLabel>
-                                <Switch checked={animate} onChange={(e) => setAnimate(e.target.checked)} />
-                            </FormControl>
-                        </Grid>
+
                         <Grid item xs={12}>
                             <TextField
                                 label="Cylinders"
