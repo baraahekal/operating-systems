@@ -4,7 +4,7 @@
 #include <map>
 
 void init() {
-#ifndef ONLINE_JUDGE
+#ifdef BARAA
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
 #endif
@@ -168,7 +168,6 @@ signed main() {
     std::cout << "Enter the number of requests: ";
     std::cin >> n;
     std::cout << "Enter the requests: ";
-
     for (int order = 1; order <= n; order++) {
         int x;
         std::cin >> x;
@@ -182,6 +181,7 @@ signed main() {
     std::cin >> STARTING_HEAD;
     std::cout << "Enter the number of cylinders: ";
     std::cin >> CYLINDERS;
+
 
     std::cout << "FCFS: " << FCFS(q, STARTING_HEAD) << std::endl;
     std::cout << "SSTF: " << SSTF(requests, STARTING_HEAD) << std::endl;
