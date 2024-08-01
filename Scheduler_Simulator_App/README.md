@@ -5,6 +5,7 @@ This project originated as an Operating Systems assignment, and I decided to tur
 ## Table of Contents
 
 - [Overview](#overview)
+- [Why I have chosen to use a shared library?](#why-i-have-chosen-to-use-a-shared-library)
 - [Disk Scheduling Algorithms](#disk-scheduling-algorithms)
 - [Requirements](#requirements)
 - [Building the Shared Library](#building-the-shared-library)
@@ -14,6 +15,28 @@ This project originated as an Operating Systems assignment, and I decided to tur
 ## Overview
 
 The Disk Scheduling Simulator provides implementations of various disk scheduling algorithms using C++. The project includes a shared C++ library that can be called from a Python-based backend API using FastAPI. The backend API allows users to input requests and retrieve the scheduling results, including the total distance and the sequence of requests visited.
+
+## Why I have chosen to use a shared library?
+
+I've chosen to use a shared library for several key reasons:
+
+#### Performance Boost
+- **Speed**: C++ is a compiled language, making our disk scheduling algorithms faster than if written in an interpreted language like Python.
+- **Optimizations**: C++ compilers can optimize the code for better performance.
+
+#### Memory Efficiency
+- **Shared Memory**: The library is loaded once and shared across all processes, reducing memory usage.
+- **Lower Overhead**: Multiple instances of the backend can use the same code without duplication.
+
+#### Modularity and Maintainability
+- **Clean Codebase**: Separating the algorithms into a shared library makes the main application code cleaner.
+- **Easy Updates**: Updates and bug fixes can be made to the library without changing the main application.
+
+#### Smaller Executables
+- **Faster Load Times**: Smaller executables mean faster application startup.
+- **Efficient Deployment**: Easier to distribute and update the application.
+
+
 
 ## Disk Scheduling Algorithms
 
