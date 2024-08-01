@@ -10,6 +10,7 @@ This project originated as an Operating Systems assignment, and I decided to tur
 - [Building the Shared Library](#building-the-shared-library)
 - [Backend Setup](#backend-setup)
 - [API Endpoints](#api-endpoints)
+- [Screenshots](#screenshots)
 ## Overview
 
 The Disk Scheduling Simulator provides implementations of various disk scheduling algorithms using C++. The project includes a shared C++ library that can be called from a Python-based backend API using FastAPI. The backend API allows users to input requests and retrieve the scheduling results, including the total distance and the sequence of requests visited.
@@ -70,3 +71,25 @@ The following API endpoints are available:
 - `POST /c_scan`: Computes the C-SCAN scheduling.
 - `POST /c_look`: Computes the C-LOOK scheduling.
 
+## Screenshots
+
+Here are some screenshots of the Disk Scheduling Simulator in action:
+
+
+### FCFS Algorithm Visualization
+![FCFS Visualization](screenshots/fcfs.png)
+
+### SSTF Algorithm Visualization
+![SSTF Visualization](screenshots/sstf.png)
+
+### SCAN Algorithm Visualization
+![SCAN Visualization](screenshots/scan.png)
+
+### LOOK Algorithm Visualization
+![LOOK Visualization](screenshots/look.png)
+
+### C-SCAN Algorithm Visualization
+![C-SCAN Visualization](screenshots/c_scan.png)
+
+### C-LOOK Algorithm Visualization
+![C-LOOK Visualization](screenshots/c_look.png)
