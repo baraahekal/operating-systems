@@ -4,161 +4,229 @@
 #include <map>
 #include <cmath>
 #include <vector>
+#include <cstring> 
 
 extern "C" {
-    int FCFS(const int* requests, int n, int starting_head) {
-        int total_distance = 0;
-        int current_head = starting_head;
+    struct Result {
+        int total_distance;
+        int* seek_sequence;
+        int sequence_length;
+    };
 
-        for (int i = 0; i < n; ++i) {
-            total_distance += std::abs(current_head - requests[i]);
-            current_head = requests[i];
-        }
-
-        return total_distance;
+    void free_result(Result result) {
+        delete[] result.seek_sequence;
     }
 
-    int SSTF(const int* requests, int n, int starting_head) {
+    Result FCFS(const int* requests, int num_requests, int starting_head) {
+        Result result;
+        result.total_distance = 0;
+        int current_head = starting_head;
+        std::vector<int> sequence;
+        sequence.push_back(current_head);
+
+        for (int i = 0; i < num_requests; ++i) {
+            result.total_distance += std::abs(current_head - requests[i]);
+            current_head = requests[i];
+            sequence.push_back(current_head);
+        }
+
+        result.sequence_length = sequence.size();
+        result.seek_sequence = new int[result.sequence_length];
+        std::memcpy(result.seek_sequence, sequence.data(), result.sequence_length * sizeof(int));
+
+        return result;
+    }
+
+    Result SSTF(const int* requests, int num_requests, int starting_head) {
         std::map<int, int> req_map;
-        for (int i = 0; i < n; ++i) {
+        for (int i = 0; i < num_requests; ++i) {
             req_map[requests[i]] = i;
         }
         req_map[starting_head] = -1;
 
-        int total_distance = 0;
+        Result result;
+        result.total_distance = 0;
         int current = starting_head;
+        std::vector<int> sequence;
+        sequence.push_back(current);
+
         while (req_map.size() > 1) {
-            auto current_head = req_map.find(current);
+            std::map<int, int>::iterator current_head = req_map.find(current);
             if (current_head == req_map.begin()) {
-                total_distance += std::abs(current_head->first - std::next(current_head)->first);
+                result.total_distance += std::abs(current_head->first - std::next(current_head)->first);
                 current = std::next(current_head)->first;
             } else if (std::next(current_head) == req_map.end()) {
-                total_distance += std::abs(current_head->first - std::prev(current_head)->first);
+                result.total_distance += std::abs(current_head->first - std::prev(current_head)->first);
                 current = std::prev(current_head)->first;
             } else {
                 int dist_left = std::abs(current_head->first - std::prev(current_head)->first);
                 int dist_right = std::abs(current_head->first - std::next(current_head)->first);
 
                 if (dist_left < dist_right) {
-                    total_distance += dist_left;
+                    result.total_distance += dist_left;
                     current = std::prev(current_head)->first;
-                } else if (dist_right < dist_left) {
-                    total_distance += dist_right;
-                    current = std::next(current_head)->first;
                 } else {
-                    if (std::prev(current_head)->second < std::next(current_head)->second) {
-                        total_distance += dist_left;
-                        current = std::prev(current_head)->first;
-                    } else {
-                        total_distance += dist_right;
-                        current = std::next(current_head)->first;
-                    }
+                    result.total_distance += dist_right;
+                    current = std::next(current_head)->first;
                 }
             }
             req_map.erase(current_head);
+            sequence.push_back(current);
         }
-        return total_distance;
+
+        result.sequence_length = sequence.size();
+        result.seek_sequence = new int[result.sequence_length];
+        std::memcpy(result.seek_sequence, sequence.data(), result.sequence_length * sizeof(int));
+
+        return result;
     }
 
-    int SCAN(const int* requests, int n, int starting_head, int cylinders) {
-        std::set<int> st(requests, requests + n);
+    Result SCAN(const int* requests, int num_requests, int starting_head, int cylinders) {
+        std::set<int> st(requests, requests + num_requests);
         st.insert(cylinders - 1);
         st.insert(starting_head);
 
+        Result result;
+        result.total_distance = 0;
         int current = starting_head;
-        int total_distance = 0;
+        std::vector<int> sequence;
+        sequence.push_back(current);
+
         while (current != *st.rbegin()) {
-            auto current_head = st.find(current);
-            total_distance += *std::next(current_head) - current;
+            std::set<int>::iterator current_head = st.find(current);
+            result.total_distance += *std::next(current_head) - current;
             current = *std::next(current_head);
             st.erase(current_head);
+            sequence.push_back(current);
         }
 
         current = *st.rbegin();
         while (st.size() > 1) {
-            auto current_head = st.find(current);
-            total_distance += current - *std::prev(current_head);
+            std::set<int>::iterator current_head = st.find(current);
+            result.total_distance += current - *std::prev(current_head);
             current = *std::prev(current_head);
             st.erase(current_head);
+            sequence.push_back(current);
         }
-        return total_distance;
+
+        result.sequence_length = sequence.size();
+        result.seek_sequence = new int[result.sequence_length];
+        std::memcpy(result.seek_sequence, sequence.data(), result.sequence_length * sizeof(int));
+
+        return result;
     }
 
-    int LOOK(const int* requests, int n, int starting_head) {
-        std::set<int> st(requests, requests + n);
+    Result LOOK(const int* requests, int num_requests, int starting_head) {
+        std::set<int> st(requests, requests + num_requests);
         st.insert(starting_head);
 
+        Result result;
+        result.total_distance = 0;
         int current = starting_head;
-        int total_distance = 0;
+        std::vector<int> sequence;
+        sequence.push_back(current);
+
         while (current != *st.rbegin()) {
-            auto current_head = st.find(current);
-            total_distance += *std::next(current_head) - current;
+            std::set<int>::iterator current_head = st.find(current);
+            result.total_distance += *std::next(current_head) - current;
             current = *std::next(current_head);
             st.erase(current_head);
+            sequence.push_back(current);
         }
 
         current = *st.rbegin();
         while (st.size() > 1) {
-            auto current_head = st.find(current);
-            total_distance += current - *std::prev(current_head);
+            std::set<int>::iterator current_head = st.find(current);
+            result.total_distance += current - *std::prev(current_head);
             current = *std::prev(current_head);
             st.erase(current_head);
+            sequence.push_back(current);
         }
-        return total_distance;
+
+        result.sequence_length = sequence.size();
+        result.seek_sequence = new int[result.sequence_length];
+        std::memcpy(result.seek_sequence, sequence.data(), result.sequence_length * sizeof(int));
+
+        return result;
     }
 
-    int C_SCAN(const int* requests, int n, int starting_head, int cylinders) {
-        std::set<int> st(requests, requests + n);
+    Result C_SCAN(const int* requests, int num_requests, int starting_head, int cylinders) {
+        std::set<int> st(requests, requests + num_requests);
         st.insert(cylinders - 1);
         st.insert(0);
         st.insert(starting_head);
 
+        Result result;
+        result.total_distance = 0;
         int current = starting_head;
-        int total_distance = 0;
+        std::vector<int> sequence;
+        sequence.push_back(current);
+
         while (current != *st.rbegin()) {
-            auto current_head = st.find(current);
-            total_distance += *std::next(current_head) - current;
+            std::set<int>::iterator current_head = st.find(current);
+            result.total_distance += *std::next(current_head) - current;
             current = *std::next(current_head);
             st.erase(current_head);
+            sequence.push_back(current);
         }
 
-        total_distance += current - *st.begin();
+        result.total_distance += current - *st.begin();
         st.erase(current);
 
         current = *st.begin();
+        sequence.push_back(current);
+
         while (st.size() > 1) {
-            auto current_head = st.find(current);
-            total_distance += *std::next(current_head) - current;
+            std::set<int>::iterator current_head = st.find(current);
+            result.total_distance += *std::next(current_head) - current;
             current = *std::next(current_head);
             st.erase(current_head);
+            sequence.push_back(current);
         }
-        return total_distance;
+
+        result.sequence_length = sequence.size();
+        result.seek_sequence = new int[result.sequence_length];
+        std::memcpy(result.seek_sequence, sequence.data(), result.sequence_length * sizeof(int));
+
+        return result;
     }
 
-    int C_LOOK(const int* requests, int n, int starting_head) {
-        std::set<int> st(requests, requests + n);
+    Result C_LOOK(const int* requests, int num_requests, int starting_head) {
+        std::set<int> st(requests, requests + num_requests);
         st.insert(starting_head);
 
+        Result result;
+        result.total_distance = 0;
         int current = starting_head;
-        int total_distance = 0;
+        std::vector<int> sequence;
+        sequence.push_back(current);
+
         while (current != *st.rbegin()) {
-            auto current_head = st.find(current);
-            total_distance += *std::next(current_head) - current;
+            std::set<int>::iterator current_head = st.find(current);
+            result.total_distance += *std::next(current_head) - current;
             current = *std::next(current_head);
             st.erase(current_head);
+            sequence.push_back(current);
         }
 
-        total_distance += current - *st.begin();
+        result.total_distance += current - *st.begin();
         st.erase(current);
 
         current = *st.begin();
+        sequence.push_back(current);
+
         while (st.size() > 1) {
-            auto current_head = st.find(current);
-            total_distance += *std::next(current_head) - current;
+            std::set<int>::iterator current_head = st.find(current);
+            result.total_distance += *std::next(current_head) - current;
             current = *std::next(current_head);
             st.erase(current_head);
+            sequence.push_back(current);
         }
-        return total_distance;
+
+        result.sequence_length = sequence.size();
+        result.seek_sequence = new int[result.sequence_length];
+        std::memcpy(result.seek_sequence, sequence.data(), result.sequence_length * sizeof(int));
+
+        return result;
     }
 }
-

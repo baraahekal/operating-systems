@@ -11,3 +11,22 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+body {
+    background-color: #1e1e1e;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+h1, h2, h3 {
+    color: white;
+}
+
+.MuiFormControl-root, .MuiFormLabel-root, .MuiInputBase-root, .MuiButton-root {
+    color: white;
+}
+
+.MuiPaper-root {
+    background-color: #424242 !important;
+}
+

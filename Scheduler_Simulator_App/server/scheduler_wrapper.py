@@ -1,60 +1,72 @@
 import ctypes
-import os
+from ctypes import Structure, c_int, POINTER
+from typing import List
 
-# Load the shared library
-lib = ctypes.CDLL(os.path.abspath("libdisk_scheduling.so"))
+class Result(Structure):
+    _fields_ = [("total_distance", c_int),
+                ("seek_sequence", POINTER(c_int)),
+                ("sequence_length", c_int)]
 
-# Define the argument and return types for each function
-lib.FCFS.argtypes = (ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.c_int)
-lib.FCFS.restype = ctypes.c_int
+lib = ctypes.CDLL("./libdisk_scheduling.so")
 
-lib.SSTF.argtypes = (ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.c_int)
-lib.SSTF.restype = ctypes.c_int
+lib.FCFS.argtypes = (POINTER(c_int), c_int, c_int)
+lib.FCFS.restype = Result
 
-lib.SCAN.argtypes = (ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.c_int, ctypes.c_int)
-lib.SCAN.restype = ctypes.c_int
+lib.SSTF.argtypes = (POINTER(c_int), c_int, c_int)
+lib.SSTF.restype = Result
 
-lib.LOOK.argtypes = (ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.c_int)
-lib.LOOK.restype = ctypes.c_int
+lib.SCAN.argtypes = (POINTER(c_int), c_int, c_int, c_int)
+lib.SCAN.restype = Result
 
-lib.C_SCAN.argtypes = (ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.c_int, ctypes.c_int)
-lib.C_SCAN.restype = ctypes.c_int
+lib.LOOK.argtypes = (POINTER(c_int), c_int, c_int)
+lib.LOOK.restype = Result
 
-lib.C_LOOK.argtypes = (ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.c_int)
-lib.C_LOOK.restype = ctypes.c_int
+lib.C_SCAN.argtypes = (POINTER(c_int), c_int, c_int, c_int)
+lib.C_SCAN.restype = Result
 
+lib.C_LOOK.argtypes = (POINTER(c_int), c_int, c_int)
+lib.C_LOOK.restype = Result
 
-def fcfs(requests, starting_head):
-    n = len(requests)
-    arr = (ctypes.c_int * n)(*requests)
-    return lib.FCFS(arr, n, starting_head)
+lib.free_result.argtypes = (Result,)
+lib.free_result.restype = None
 
+def extract_result(result):
+    seek_sequence = [result.seek_sequence[i] for i in range(result.sequence_length)]
+    lib.free_result(result)  # Free the allocated memory for the seek sequence
+    return {"total_distance": result.total_distance, "seek_sequence": seek_sequence}
 
-def sstf(requests, starting_head):
-    n = len(requests)
-    arr = (ctypes.c_int * n)(*requests)
-    return lib.SSTF(arr, n, starting_head)
+def fcfs(requests: List[int], starting_head: int):
+    num_requests = len(requests)
+    arr = (c_int * num_requests)(*requests)
+    result = lib.FCFS(arr, num_requests, starting_head)
+    return extract_result(result)
 
+def sstf(requests: List[int], starting_head: int):
+    num_requests = len(requests)
+    arr = (c_int * num_requests)(*requests)
+    result = lib.SSTF(arr, num_requests, starting_head)
+    return extract_result(result)
 
-def scan(requests, starting_head, cylinders):
-    n = len(requests)
-    arr = (ctypes.c_int * n)(*requests)
-    return lib.SCAN(arr, n, starting_head, cylinders)
+def scan(requests: List[int], starting_head: int, cylinders: int):
+    num_requests = len(requests)
+    arr = (c_int * num_requests)(*requests)
+    result = lib.SCAN(arr, num_requests, starting_head, cylinders)
+    return extract_result(result)
 
+def look(requests: List[int], starting_head: int):
+    num_requests = len(requests)
+    arr = (c_int * num_requests)(*requests)
+    result = lib.LOOK(arr, num_requests, starting_head)
+    return extract_result(result)
 
-def look(requests, starting_head):
-    n = len(requests)
-    arr = (ctypes.c_int * n)(*requests)
-    return lib.LOOK(arr, n, starting_head)
+def c_scan(requests: List[int], starting_head: int, cylinders: int):
+    num_requests = len(requests)
+    arr = (c_int * num_requests)(*requests)
+    result = lib.C_SCAN(arr, num_requests, starting_head, cylinders)
+    return extract_result(result)
 
-
-def c_scan(requests, starting_head, cylinders):
-    n = len(requests)
-    arr = (ctypes.c_int * n)(*requests)
-    return lib.C_SCAN(arr, n, starting_head, cylinders)
-
-
-def c_look(requests, starting_head):
-    n = len(requests)
-    arr = (ctypes.c_int * n)(*requests)
-    return lib.C_LOOK(arr, n, starting_head)
+def c_look(requests: List[int], starting_head: int):
+    num_requests = len(requests)
+    arr = (c_int * num_requests)(*requests)
+    result = lib.C_LOOK(arr, num_requests, starting_head)
+    return extract_result(result)

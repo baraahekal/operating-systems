@@ -8,6 +8,21 @@
     padding: 20px;
 }
 
+body {
+    background-color: #1e1e1e;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+h1, h2 {
+    color: white;
+}
+
+.MuiFormControl-root {
+    margin-bottom: 20px;
+}
+
+
 form {
     display: inline-block;
     text-align: left;
