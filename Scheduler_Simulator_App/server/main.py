@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-import scheduler_wrapper as ds
+import disk_scheduling_wrapper as ds
 
 app = FastAPI()
 
